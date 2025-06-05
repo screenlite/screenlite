@@ -57,7 +57,7 @@
 		"i18next-http-middleware": "^3.7.1",
 		"ioredis": "^5.6.0",
 		"mime": "^4.0.6",
-		"multer": "^2.0.0",
+		"multer": "^2.0.1",
 		"pg": "^8.14.0",
 		"sharp": "^0.33.5",
 		"socket.io": "^4.8.1",
