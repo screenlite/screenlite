@@ -24,7 +24,7 @@
 		"@smithy/types": "^4.1.0",
 		"@socket.io/redis-adapter": "^8.3.0",
 		"@types/nodemailer": "^6.4.17",
-		"axios": "^1.10.0",
+		"axios": "^1.11.0",
 		"bcrypt": "^5.1.1",
 		"body-parser": "^1.20.3",
 		"bullmq": "^5.43.0",
