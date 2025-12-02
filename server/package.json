@@ -40,7 +40,7 @@
 		"ioredis": "^5.6.1",
 		"mime": "^4.0.7",
 		"multer": "^2.0.2",
-		"nodemailer": "^7.0.5",
+		"nodemailer": "^7.0.11",
 		"pg": "^8.16.3",
 		"sharp": "^0.34.3",
 		"swagger-jsdoc": "^6.2.8",
