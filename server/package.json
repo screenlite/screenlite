@@ -13,8 +13,8 @@
 		"env:sync": "node scripts/sync-env-docs.js"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.962.0",
-		"@aws-sdk/s3-request-presigner": "^3.962.0",
+		"@aws-sdk/client-s3": "^3.995.0",
+		"@aws-sdk/s3-request-presigner": "^3.995.0",
 		"@fastify/cors": "^11.2.0",
 		"@fastify/deepmerge": "^3.1.0",
 		"@fastify/formbody": "^8.0.2",
