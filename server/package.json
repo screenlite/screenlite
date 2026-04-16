@@ -67,7 +67,7 @@
 		"env-cmd": "^11.0.0",
 		"eslint": "^9.39.2",
 		"globals": "^17.0.0",
-		"prisma": "^7.2.0",
+		"prisma": "^7.7.0",
 		"rimraf": "^6.1.2",
 		"supertest": "^7.1.4",
 		"tsconfig-paths": "^4.2.0",
