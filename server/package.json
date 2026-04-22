@@ -35,7 +35,7 @@
 		"fastify-type-provider-zod": "^6.1.0",
 		"glob": "^13.0.0",
 		"i18next": "^25.7.3",
-		"i18next-fs-backend": "^2.6.1",
+		"i18next-fs-backend": "^2.6.4",
 		"i18next-http-middleware": "^3.9.2",
 		"ioredis": "^5.8.2",
 		"mime": "^4.1.0",
