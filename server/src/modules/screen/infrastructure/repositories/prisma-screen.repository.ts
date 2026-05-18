@@ -1,0 +1,68 @@
+import { Prisma, PrismaClient } from '@/generated/prisma/client.ts'
+import { IScreenRepository } from '../../domain/ports/screen-repository.interface.ts'
+import { Screen, ScreenType, LayoutRotation } from '@/core/entities/screen.entity.ts'
+
+export class PrismaScreenRepository implements IScreenRepository {
+    constructor(private readonly prisma: PrismaClient | Prisma.TransactionClient) {}
+
+    async findById(id: string): Promise<Screen | null> {
+        const data = await this.prisma.screen.findUnique({
+            where: { id }
+        })
+        return data ? this.toDomain(data) : null
+    }
+
+    async findByWorkspaceId(workspaceId: string): Promise<Screen[]> {
+        const data = await this.prisma.screen.findMany({
+            where: { workspaceId },
+            orderBy: { createdAt: 'desc' }
+        })
+        return data.map(this.toDomain)
+    }
+
+    async save(screen: Screen): Promise<void> {
+        await this.prisma.screen.upsert({
+            where: { id: screen.id },
+            create: {
+                id: screen.id,
+                workspaceId: screen.workspaceId,
+                groupId: screen.groupId,
+                name: screen.name,
+                layoutRotation: screen.layoutRotation,
+                resolutionWidth: screen.resolutionWidth,
+                resolutionHeight: screen.resolutionHeight,
+                type: screen.type,
+            },
+            update: {
+                groupId: screen.groupId,
+                name: screen.name,
+                layoutRotation: screen.layoutRotation,
+                resolutionWidth: screen.resolutionWidth,
+                resolutionHeight: screen.resolutionHeight,
+                type: screen.type,
+                updatedAt: screen.updatedAt,
+            }
+        })
+    }
+
+    async deleteMany(ids: string[]): Promise<void> {
+        await this.prisma.screen.deleteMany({
+            where: { id: { in: ids } }
+        })
+    }
+
+    private toDomain(data: any): Screen {
+        return new Screen({
+            id: data.id,
+            workspaceId: data.workspaceId,
+            groupId: data.groupId,
+            name: data.name,
+            layoutRotation: data.layoutRotation as LayoutRotation,
+            resolutionWidth: data.resolutionWidth,
+            resolutionHeight: data.resolutionHeight,
+            type: data.type as ScreenType,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+        })
+    }
+}
