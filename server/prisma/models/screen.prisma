@@ -20,6 +20,7 @@ model Screen {
     workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
     device    Device?
     group     ScreenGroup?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
+    playlists PlaylistScreen[]
 
     @@index([workspaceId])
     @@index([groupId])

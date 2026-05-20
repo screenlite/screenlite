@@ -34,7 +34,7 @@ export class ScreenMapper {
             createdAt: screen.createdAt.toISOString(),
             updatedAt: screen.updatedAt.toISOString(),
             playlists: screen.playlists ?? [],
-            _count: { playlists: 0 },
+            _count: { playlists: (screen.playlists ?? []).length },
         }
     }
 }

@@ -17,6 +17,8 @@ model Playlist {
 
     items       PlaylistItem[]
     parentItems PlaylistItem[]     @relation("PlaylistAsNestedPlaylist")
+    screens     PlaylistScreen[]
+    schedules   PlaylistSchedule[]
 
     @@index([workspaceId])
     @@index([playlistLayoutId])

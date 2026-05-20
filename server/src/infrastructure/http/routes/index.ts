@@ -40,7 +40,7 @@ export async function registerRoutes(fastify: FastifyInstance) {
     fastify.register(fileManagementRoutes, { prefix: '/api/workspaces/:workspaceId/files' })
     fastify.register(playlistRoutes, { prefix: '/api/workspaces/:workspaceId/playlists' })
     fastify.register(playlistGlobalRoutes, { prefix: '/api/playlists' })
-    fastify.register(playlistScheduleRoutes, { prefix: '/api/playlistSchedules' })
+    fastify.register(playlistScheduleRoutes, { prefix: '/api/workspaces/:workspaceId/playlist-schedules' })
     fastify.register(layoutRoutes, { prefix: '/api/workspaces/:workspaceId/layouts' })
     fastify.register(folderRoutes, { prefix: '/api/workspaces/:workspaceId/folders' })
     fastify.register(layoutRoutes, { prefix: '/api/workspaces/:workspaceId/playlistLayouts' })

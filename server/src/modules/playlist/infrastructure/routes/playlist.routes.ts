@@ -193,7 +193,11 @@ const playlistRoutes = async (fastify: FastifyInstance) => {
                 orderBy: { order: 'asc' },
                 include: { file: true, nestedPlaylist: true }
             })
-            return reply.send({ items })
+            const serialized = items.map((item: any) => ({
+                ...item,
+                file: item.file ? { ...item.file, size: item.file.size?.toString?.() ?? '0' } : null
+            }))
+            return reply.send({ items: serialized })
         }
     })
 
@@ -220,6 +224,61 @@ const playlistRoutes = async (fastify: FastifyInstance) => {
                     data: { id: item.id ?? uuidv4(), playlistId, type: item.type, duration: item.duration ?? null, playlistLayoutSectionId: item.playlistLayoutSectionId, fileId: item.fileId ?? null, nestedPlaylistId: item.nestedPlaylistId ?? null, order: item.order, updatedAt: new Date() }
                 }))
             )
+
+            // Push updated playlist to all connected screens
+            const playlistScreens: any[] = await prisma.$queryRaw`
+                SELECT "screenId" FROM "PlaylistScreen" WHERE "playlistId" = ${playlistId}
+            `
+            if (playlistScreens.length > 0) {
+                const sections: any[] = await prisma.$queryRaw`
+                    SELECT pls.* FROM "PlaylistLayoutSection" pls
+                    JOIN "PlaylistLayout" pl ON pl.id = pls."playlistLayoutId"
+                    WHERE pl.id = (SELECT "playlistLayoutId" FROM "Playlist" WHERE id = ${playlistId})
+                `
+                const items: any[] = await prisma.$queryRaw`
+                    SELECT pi.*, f.id as file_id, f.name as file_name, f."mimeType", f.path
+                    FROM "PlaylistItem" pi
+                    LEFT JOIN "File" f ON f.id = pi."fileId"
+                    WHERE pi."playlistId" = ${playlistId}
+                    ORDER BY pi."order" ASC
+                `
+                const playlist = await prisma.playlist.findUnique({
+                    where: { id: playlistId },
+                    include: { playlistLayout: true }
+                })
+                const pushPayload = JSON.stringify({
+                    type: 'playlist_updated',
+                    playlist: {
+                        id: playlistId,
+                        name: playlist?.name,
+                        layout: playlist?.playlistLayout ? {
+                            id: playlist.playlistLayout.id,
+                            resolutionWidth: playlist.playlistLayout.resolutionWidth,
+                            resolutionHeight: playlist.playlistLayout.resolutionHeight,
+                            sections,
+                        } : null,
+                        items: items.map((item: any) => ({
+                            id: item.id,
+                            type: item.type,
+                            duration: item.duration,
+                            playlistLayoutSectionId: item.playlistLayoutSectionId,
+                            file: item.file_id ? {
+                                id: item.file_id,
+                                name: item.file_name,
+                                mimeType: item.mimeType,
+                                path: item.path,
+                            } : null,
+                        })),
+                    }
+                })
+                for (const ps of playlistScreens) {
+                    await fastify.websocket.broadcaster.broadcastToChannel(
+                        `screen:${ps.screenId}`,
+                        pushPayload
+                    )
+                }
+            }
+
             return reply.send({ items: created })
         }
     })

@@ -9,7 +9,16 @@ export class PrismaScreenRepository implements IScreenRepository {
         const data = await this.prisma.screen.findUnique({
             where: { id }
         })
-        return data ? this.toDomain(data) : null
+        if (!data) return null
+        const playlistLinks = await this.prisma.$queryRaw<{ screenId: string, playlistId: string }[]>`
+            SELECT "screenId", "playlistId"
+            FROM "PlaylistScreen"
+            WHERE "screenId" = ${data.id}
+        `
+        return this.toDomain({
+            ...data,
+            playlists: playlistLinks.map(l => ({ playlistId: l.playlistId })),
+        })
     }
 
     async findByWorkspaceId(workspaceId: string): Promise<Screen[]> {
