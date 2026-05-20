@@ -39,12 +39,12 @@ const ScreenList = ({ search, toggleItemSelection, isSelected }: ScreenListProps
         }
     ))
 
-    const screens = data.data as ScreenWithPlaylists[]
+    const screens = data.items as ScreenWithPlaylists[]
 
     const meta = data.meta
 
     const isAddedToPlaylist = (screen: ScreenWithPlaylists) => {
-        return screen.playlists.length > 0
+        return (screen.playlists?.length ?? 0) > 0
     }
 
     return (

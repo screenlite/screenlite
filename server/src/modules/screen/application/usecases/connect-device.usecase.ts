@@ -19,7 +19,7 @@ export class ConnectDeviceUsecase {
     async execute(dto: ConnectDeviceDTO): Promise<Device> {
         const { authContext, workspaceId, screenId, connectionCode } = dto
 
-        const workspaceAccess = await this.workspaceAccessService.getWorkspaceAccess(
+        const workspaceAccess = await this.workspaceAccessService.checkAccess(
             workspaceId,
             authContext
         )

@@ -14,7 +14,7 @@ export class GetWorkspaceScreensUsecase {
         workspaceId: string,
         authContext: AuthContext
     ): Promise<Screen[]> {
-        const workspaceAccess = await this.workspaceAccessService.getWorkspaceAccess(
+        const workspaceAccess = await this.workspaceAccessService.checkAccess(
             workspaceId,
             authContext
         )

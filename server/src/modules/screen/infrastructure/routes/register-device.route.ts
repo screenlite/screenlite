@@ -9,6 +9,9 @@ import { TokenGenerator } from '@/shared/infrastructure/services/token-generator
 // Prefix: /api/devices
 export const registerDeviceRoute = async (fastify: FastifyInstance) => {
     fastify.withTypeProvider<ZodTypeProvider>().post('/register', {
+        config: {
+            allowGuest: true
+        },
         schema: {
             body: z.object({
                 connectionCode: z.string().optional(),

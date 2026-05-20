@@ -26,7 +26,7 @@ export const WorkspacePlaylistsPageContent = () => {
             />
             <Pagination
                 page={ filters.page }
-                pages={ data?.meta.pages }
+                pages={ data?.meta.totalPages }
                 onPageChange={ (value) => setFilter('page', value.toString()) }
             />
         </>

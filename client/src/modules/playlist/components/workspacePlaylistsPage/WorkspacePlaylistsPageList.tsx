@@ -13,9 +13,9 @@ export const WorkspacePlaylistsPageList = ({ data, isLoading }: { data?: Workspa
         )
     }
 
-    const { meta, data: playlists } = data
+    const { meta, items: playlists } = data
 
-    const pageExists = filters.page <= meta.pages
+    const pageExists = filters.page <= meta.totalPages
 
     if(!pageExists) {
         return (

@@ -12,7 +12,7 @@ export class DeleteScreensUsecase {
     async execute(dto: DeleteScreensDTO): Promise<void> {
         const { authContext, workspaceId, screenIds } = dto
 
-        const workspaceAccess = await this.workspaceAccessService.getWorkspaceAccess(
+        const workspaceAccess = await this.workspaceAccessService.checkAccess(
             workspaceId,
             authContext
         )

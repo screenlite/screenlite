@@ -24,6 +24,7 @@ export type ScreenProps = {
     type: ScreenType
     createdAt: Date
     updatedAt: Date
+    playlists?: { playlistId: string }[]
 }
 
 export class Screen {
@@ -37,6 +38,7 @@ export class Screen {
     public type: ScreenType
     public readonly createdAt: Date
     public updatedAt: Date
+    public playlists: { playlistId: string }[]
 
     constructor(props: ScreenProps) {
         this.id = props.id
@@ -49,5 +51,6 @@ export class Screen {
         this.type = props.type
         this.createdAt = props.createdAt
         this.updatedAt = props.updatedAt
+        this.playlists = props.playlists ?? []
     }
 }

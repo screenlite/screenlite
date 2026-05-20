@@ -15,7 +15,7 @@ export const FileSelectorFileList = ({ search }: Props) => {
             search,
         }
     }))
-    const files = data.data
+    const files = data.items
     const meta = data.meta
 
     return (

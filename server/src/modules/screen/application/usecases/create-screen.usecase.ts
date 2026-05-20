@@ -24,7 +24,7 @@ export class CreateScreenUsecase {
             })
         }
 
-        const workspaceAccess = await this.workspaceAccessService.getWorkspaceAccess(
+        const workspaceAccess = await this.workspaceAccessService.checkAccess(
             workspaceId,
             authContext
         )

@@ -30,7 +30,7 @@ export const WorkspaceScreensPageContent = () => {
             </div>
             <Pagination
                 page={ filters.page }
-                pages={ data?.meta.totalPages }
+                pages={ data?.meta?.totalPages ?? 1 }
                 onPageChange={ setPage }
             />
         </div>

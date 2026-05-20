@@ -14,6 +14,13 @@ import workspaceRoutes from '@/modules/workspace/infrastructure/routes/workspace
 import workspaceInvitationRoutes from '@/modules/workspace-invitation/infrastructure/routes/workspace-invitation.routes.ts'
 import screenRoutes from '@/modules/screen/infrastructure/routes/screen.routes.ts'
 import deviceRoutes from '@/modules/screen/infrastructure/routes/device.routes.ts'
+import fileRoutes from '@/modules/file/infrastructure/routes/file.routes.ts'
+import fileManagementRoutes from '@/modules/file/infrastructure/routes/file-management.routes.ts'
+import playlistRoutes from '@/modules/playlist/infrastructure/routes/playlist.routes.ts'
+import playlistGlobalRoutes from '@/modules/playlist/infrastructure/routes/playlist-global.routes.ts'
+import playlistScheduleRoutes from '@/modules/playlist/infrastructure/routes/playlist-schedule.routes.ts'
+import layoutRoutes from '@/modules/layout/infrastructure/routes/layout.routes.ts'
+import folderRoutes from '@/modules/folder/infrastructure/routes/folder.routes.ts'
 
 export async function registerRoutes(fastify: FastifyInstance) {
     fastify.register(healthRoutes, { prefix: '/api/health' })
@@ -29,10 +36,14 @@ export async function registerRoutes(fastify: FastifyInstance) {
     fastify.register(workspaceInvitationRoutes, { prefix: '/api/workspace-invitations' })
     fastify.register(screenRoutes, { prefix: '/api/workspaces/:workspaceId/screens' })
     fastify.register(deviceRoutes, { prefix: '/api/devices' })
-
-    fastify.register(async function adminRoutes(fastifyAdmin) {
-        fastifyAdmin.addHook('onRequest', fastify.requireAdminAccess)
-    
+    fastify.register(fileRoutes, { prefix: '/api/workspaces/:workspaceId/files' })
+    fastify.register(fileManagementRoutes, { prefix: '/api/workspaces/:workspaceId/files' })
+    fastify.register(playlistRoutes, { prefix: '/api/workspaces/:workspaceId/playlists' })
+    fastify.register(playlistGlobalRoutes, { prefix: '/api/playlists' })
+    fastify.register(playlistScheduleRoutes, { prefix: '/api/playlistSchedules' })
+    fastify.register(layoutRoutes, { prefix: '/api/workspaces/:workspaceId/layouts' })
+    fastify.register(folderRoutes, { prefix: '/api/workspaces/:workspaceId/folders' })
+    fastify.register(layoutRoutes, { prefix: '/api/workspaces/:workspaceId/playlistLayouts' })
     fastify.register(async function adminRoutes(fastifyAdmin) {
         fastifyAdmin.addHook('onRequest', fastify.requireAdminAccess)
         fastifyAdmin.register(settingRoutes, { prefix: '/settings' })

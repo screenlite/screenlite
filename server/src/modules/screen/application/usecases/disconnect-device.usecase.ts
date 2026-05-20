@@ -15,7 +15,7 @@ export class DisconnectDeviceUsecase {
     async execute(dto: DisconnectDeviceDTO): Promise<void> {
         const { authContext, workspaceId, screenId } = dto
 
-        const workspaceAccess = await this.workspaceAccessService.getWorkspaceAccess(
+        const workspaceAccess = await this.workspaceAccessService.checkAccess(
             workspaceId,
             authContext
         )

@@ -15,9 +15,31 @@ export class PrismaScreenRepository implements IScreenRepository {
     async findByWorkspaceId(workspaceId: string): Promise<Screen[]> {
         const data = await this.prisma.screen.findMany({
             where: { workspaceId },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
         })
-        return data.map(this.toDomain)
+
+        const screenIds = data.map(screen => screen.id)
+
+        const playlistLinks = screenIds.length
+            ? await this.prisma.$queryRaw<{ screenId: string, playlistId: string }[]>`
+                SELECT "screenId", "playlistId"
+                FROM "PlaylistScreen"
+                WHERE "screenId" IN (${Prisma.join(screenIds)})
+            `
+            : []
+
+        const playlistLinksByScreenId = new Map<string, { playlistId: string }[]>()
+
+        for (const link of playlistLinks) {
+            const existing = playlistLinksByScreenId.get(link.screenId) ?? []
+            existing.push({ playlistId: link.playlistId })
+            playlistLinksByScreenId.set(link.screenId, existing)
+        }
+
+        return data.map(screen => this.toDomain({
+            ...screen,
+            playlists: playlistLinksByScreenId.get(screen.id) ?? [],
+        }))
     }
 
     async save(screen: Screen): Promise<void> {
@@ -63,6 +85,7 @@ export class PrismaScreenRepository implements IScreenRepository {
             type: data.type as ScreenType,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
+            playlists: data.playlists ?? [],
         })
     }
 }

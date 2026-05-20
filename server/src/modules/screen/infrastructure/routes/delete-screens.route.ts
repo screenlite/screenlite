@@ -6,33 +6,20 @@ import { PrismaScreenRepository } from '../repositories/prisma-screen.repository
 
 // Prefix: /api/workspaces/:workspaceId/screens
 export const deleteScreensRoute = async (fastify: FastifyInstance) => {
-    fastify.withTypeProvider<ZodTypeProvider>().delete('/', {
-        schema: {
-            params: z.object({
-                workspaceId: z.string().uuid(),
-            }),
-            body: z.object({
-                screenIds: z.array(z.string().uuid()).min(1),
-            }),
-        },
-        handler: async (request, reply) => {
-            const { workspaceId } = request.params
-            const { screenIds } = request.body
+    const schema = {
+        params: z.object({ workspaceId: z.string().uuid() }),
+        body: z.object({ screenIds: z.array(z.string().uuid()).min(1) }),
+    }
 
-            const screenRepository = new PrismaScreenRepository(fastify.prisma)
+    const handler = async (request: any, reply: any) => {
+        const { workspaceId } = request.params
+        const { screenIds } = request.body
+        const screenRepository = new PrismaScreenRepository(fastify.prisma)
+        const usecase = new DeleteScreensUsecase(screenRepository, fastify.workspaceAccessService)
+        await usecase.execute({ authContext: request.auth, workspaceId, screenIds })
+        return reply.status(200).send({ success: true })
+    }
 
-            const usecase = new DeleteScreensUsecase(
-                screenRepository,
-                fastify.workspaceAccessService
-            )
-
-            await usecase.execute({
-                authContext: request.auth,
-                workspaceId,
-                screenIds,
-            })
-
-            return reply.status(200).send({ success: true })
-        }
-    })
+    fastify.withTypeProvider<ZodTypeProvider>().delete('/', { schema, handler })
+    fastify.withTypeProvider<ZodTypeProvider>().post('/delete', { schema, handler })
 }

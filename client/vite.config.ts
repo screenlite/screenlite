@@ -17,10 +17,11 @@ export default defineConfig({
     server: {
         port: parseInt(process.env.VITE_PORT || '3001'),
         host: '0.0.0.0',
-        hmr: {
-            protocol: 'ws',
-            host: process.env.VITE_HMR_HOST || 'localhost',
+        allowedHosts: true,
+        hmr: process.env.VITE_HMR_HOST ? {
+            protocol: 'wss',
+            host: process.env.VITE_HMR_HOST,
             port: parseInt(process.env.VITE_PORT || '3001')
-        }
+        } : false
     }
 })
