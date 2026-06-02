@@ -14,6 +14,14 @@ export type ScreenDTO = {
     updatedAt: string
     playlists?: { playlistId: string }[]
     _count: { playlists: number }
+    device: {
+        id: string
+        connectionCode: string
+        onlineAt: string
+        createdAt: string
+        updatedAt: string
+        isOnline: boolean
+    } | null
 }
 
 export class ScreenMapper {
@@ -35,6 +43,14 @@ export class ScreenMapper {
             updatedAt: screen.updatedAt.toISOString(),
             playlists: screen.playlists ?? [],
             _count: { playlists: (screen.playlists ?? []).length },
+            device: screen.device ? {
+                id: screen.device.id,
+                connectionCode: screen.device.connectionCode,
+                onlineAt: screen.device.onlineAt.toISOString(),
+                createdAt: screen.device.createdAt.toISOString(),
+                updatedAt: screen.device.updatedAt.toISOString(),
+                isOnline: (Date.now() - screen.device.onlineAt.getTime()) < 60000,
+            } : null,
         }
     }
 }

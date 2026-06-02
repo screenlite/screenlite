@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@/generated/prisma/client.ts'
 import { IScreenRepository } from '../../domain/ports/screen-repository.interface.ts'
 import { Screen, ScreenType, LayoutRotation } from '@/core/entities/screen.entity.ts'
+import { Device } from '@/core/entities/device.entity.ts'
 
 export class PrismaScreenRepository implements IScreenRepository {
     constructor(private readonly prisma: PrismaClient | Prisma.TransactionClient) {}
@@ -10,14 +11,21 @@ export class PrismaScreenRepository implements IScreenRepository {
             where: { id }
         })
         if (!data) return null
+
         const playlistLinks = await this.prisma.$queryRaw<{ screenId: string, playlistId: string }[]>`
             SELECT "screenId", "playlistId"
             FROM "PlaylistScreen"
             WHERE "screenId" = ${data.id}
         `
+
+        const deviceData = await this.prisma.device.findFirst({
+            where: { screenId: data.id }
+        })
+
         return this.toDomain({
             ...data,
             playlists: playlistLinks.map(l => ({ playlistId: l.playlistId })),
+            device: deviceData ?? null,
         })
     }
 
@@ -48,6 +56,7 @@ export class PrismaScreenRepository implements IScreenRepository {
         return data.map(screen => this.toDomain({
             ...screen,
             playlists: playlistLinksByScreenId.get(screen.id) ?? [],
+            device: null,
         }))
     }
 
@@ -95,6 +104,15 @@ export class PrismaScreenRepository implements IScreenRepository {
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
             playlists: data.playlists ?? [],
+            device: data.device ? new Device({
+                id: data.device.id,
+                screenId: data.device.screenId,
+                token: data.device.token,
+                connectionCode: data.device.connectionCode,
+                createdAt: data.device.createdAt,
+                updatedAt: data.device.updatedAt,
+                onlineAt: data.device.onlineAt,
+            }) : null,
         })
     }
 }

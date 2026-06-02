@@ -38,14 +38,8 @@ export const DisconnectDeviceForm = ({ onClose }: Props) => {
 
     const { mutate, isPending } = useMutation({
         mutationFn: (data: DisconnectDeviceRequestData) => disconnectDeviceRequest(data),
-        onSuccess: () => {
-            queryClient.setQueryData(currentScreenQuery.queryKey, (oldData: Screen | undefined) => {
-                if (!oldData) return oldData
-                return {
-                    ...oldData,
-                    device: null
-                }
-            })
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: currentScreenQuery.queryKey })
             onClose()
         },
         onError: (error) => {

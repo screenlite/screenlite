@@ -98,12 +98,12 @@ export const AddScreensToPlaylistModal = ({ onClose }: { onClose: () => void }) 
 
     const { mutate, isPending } = useMutation({
         mutationFn: (data: AddScreensToPlaylistRequestData) => addScreensToPlaylistRequest(data),
-        onSuccess: (data) => {
-            queryClient.invalidateQueries(playlistQuery({
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: playlistQuery({
                 playlistId: playlist.id,
                 workspaceId: workspace.id
-            }))
-            queryClient.setQueryData(screensQuery.queryKey, data)
+            }).queryKey })
+            await queryClient.invalidateQueries({ queryKey: screensQuery.queryKey })
             onClose()
         },
         onError: (error) => {

@@ -21,7 +21,7 @@ export class S3StorageAdapter implements IStorage {
 
     constructor(config: Config) {
         this.s3Client = config.s3Client
-        this.bucket = config.bucket || 'screenlite'
+        this.bucket = config.bucket || 'screenlite-uploads'
     }
 
     private async checkFileExists(key: string): Promise<boolean> {

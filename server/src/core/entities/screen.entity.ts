@@ -1,3 +1,5 @@
+import { Device } from './device.entity.ts'
+
 export type ScreenType =
     | 'consumer_tv'
     | 'commercial_display'
@@ -25,6 +27,7 @@ export type ScreenProps = {
     createdAt: Date
     updatedAt: Date
     playlists?: { playlistId: string }[]
+    device?: Device | null
 }
 
 export class Screen {
@@ -39,6 +42,7 @@ export class Screen {
     public readonly createdAt: Date
     public updatedAt: Date
     public playlists: { playlistId: string }[]
+    public device: Device | null
 
     constructor(props: ScreenProps) {
         this.id = props.id
@@ -52,5 +56,6 @@ export class Screen {
         this.createdAt = props.createdAt
         this.updatedAt = props.updatedAt
         this.playlists = props.playlists ?? []
+        this.device = props.device ?? null
     }
 }

@@ -6,9 +6,9 @@ import { PrismaClient } from '@/generated/prisma/client.ts'
 
 const playlistWithCount = {
     include: {
-        _count: { select: {  items: true } },
+        _count: { select: { items: true } },
         layout: { include: { sections: true } },
-        
+        schedules: true,
     }
 }
 
@@ -32,7 +32,7 @@ const toDTO = (p: any) => ({
         resolutionHeight: p.layout.resolutionHeight,
         sections: p.layout.sections ?? p.layout.PlaylistLayoutSection ?? [],
     } : null,
-    schedules: [],
+    schedules: p.schedules ?? [],
     _count: {
         screens: p.screensCount ?? 0,
         items: p._count?.items ?? 0,
@@ -244,14 +244,14 @@ const playlistRoutes = async (fastify: FastifyInstance) => {
                 `
                 const playlist = await prisma.playlist.findUnique({
                     where: { id: playlistId },
-                    include: { playlistLayout: true }
+                    include: { layout: true }
                 })
                 const pushPayload = JSON.stringify({
                     type: 'playlist_updated',
                     playlist: {
                         id: playlistId,
                         name: playlist?.name,
-                        layout: playlist?.playlistLayout ? {
+                        layout: playlist?.layout ? {
                             id: playlist.playlistLayout.id,
                             resolutionWidth: playlist.playlistLayout.resolutionWidth,
                             resolutionHeight: playlist.playlistLayout.resolutionHeight,

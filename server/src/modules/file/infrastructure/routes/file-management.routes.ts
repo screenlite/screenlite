@@ -39,7 +39,31 @@ const fileManagementRoutes = async (fastify: FastifyInstance) => {
     ztp.post('/delete', {
         schema: { params: z.object({ workspaceId: z.string().uuid() }), body: z.object({ fileIds: z.array(z.string()) }) },
         handler: async (request, reply) => {
-            await prisma.file.updateMany({ where: { id: { in: request.body.fileIds } }, data: { deletedAt: new Date(), updatedAt: new Date() } })
+            const { fileIds } = request.body
+
+            // Get file paths before deleting
+            const files = await prisma.file.findMany({
+                where: { id: { in: fileIds }, workspaceId: request.params.workspaceId }
+            })
+
+            // Remove playlist items referencing these files
+            await prisma.playlistItem.deleteMany({ where: { fileId: { in: fileIds } } })
+
+            // Soft delete DB records
+            await prisma.file.updateMany({
+                where: { id: { in: fileIds } },
+                data: { deletedAt: new Date(), updatedAt: new Date() }
+            })
+
+            // Delete from MinIO
+            for (const file of files) {
+                try {
+                    await fastify.storage.deleteFile(file.path)
+                } catch (e) {
+                    fastify.log.warn(`Failed to delete file from storage: ${file.path}`)
+                }
+            }
+
             return reply.send({ success: true })
         }
     })

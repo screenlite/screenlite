@@ -26,7 +26,7 @@ const playlistScheduleRoutes = async (fastify: FastifyInstance) => {
             await prisma.$executeRaw`
                 INSERT INTO "PlaylistSchedule" (id, "playlistId", "startAt", "endAt", "startTime", "endTime", weekdays, "createdAt", "updatedAt")
                 VALUES (${id}, ${playlistId}, ${new Date(startAt)}, ${endAt ? new Date(endAt) : null},
-                        ${startTime ?? null}, ${endTime ?? null}, ${weekdays ?? []}::text[], ${now}, ${now})
+                        ${startTime ?? null}, ${endTime ?? null}, ${weekdays ?? []}::"Weekday"[], ${now}, ${now})
             `
             const schedules = await prisma.$queryRaw`SELECT * FROM "PlaylistSchedule" WHERE id = ${id}`
             return reply.status(201).send({ schedule: (schedules as any[])[0] })
@@ -60,7 +60,7 @@ const playlistScheduleRoutes = async (fastify: FastifyInstance) => {
                     "endAt" = ${endAt ? new Date(endAt) : null},
                     "startTime" = ${startTime ?? null},
                     "endTime" = ${endTime ?? null},
-                    weekdays = COALESCE(${weekdays ?? null}::text[], weekdays),
+                    weekdays = COALESCE(${weekdays ?? null}::"Weekday"[], weekdays),
                     "updatedAt" = ${new Date()}
                 WHERE id = ${scheduleId}
             `
