@@ -5,6 +5,7 @@ import { getWorkspaceScreensRoute } from './get-workspace-screens.route.ts'
 import { deleteScreensRoute } from './delete-screens.route.ts'
 import { connectDeviceRoute } from './connect-device.route.ts'
 import { disconnectDeviceRoute } from './disconnect-device.route.ts'
+import { getScreenTelemetryRoute } from './get-screen-telemetry.route.ts'
 
 // Prefix: /api/workspaces/:workspaceId/screens
 const screenRoutes = async (fastify: FastifyInstance) => {
@@ -15,6 +16,7 @@ const screenRoutes = async (fastify: FastifyInstance) => {
         deleteScreensRoute(fastify),
         connectDeviceRoute(fastify),
         disconnectDeviceRoute(fastify),
+        getScreenTelemetryRoute(fastify),
     ])
 }
 

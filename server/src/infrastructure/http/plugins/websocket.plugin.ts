@@ -9,6 +9,7 @@ import { WebSocketRouter } from '@/infrastructure/websocket/websocket.router.ts'
 import { WebSocketBroadcaster } from '@/infrastructure/websocket/services/websocket-broadcaster.service.ts'
 import { IWebSocketBroadcaster } from '@/core/ports/websocket-broadcaster.interface.ts'
 import { createDeviceAuthHandler } from '@/modules/screen/infrastructure/websocket/device-auth.handler.ts'
+import { createTelemetryHandler } from '@/modules/screen/infrastructure/websocket/telemetry.handler.ts'
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -43,6 +44,12 @@ const websocketPlugin: FastifyPluginAsync = async (fastify) => {
         subscriptionRepository
     )
     websocketRouter.registerHandler('auth', deviceAuthHandler)
+
+    const telemetryHandler = createTelemetryHandler(
+        fastify.prisma as any,
+        subscriptionRepository
+    )
+    websocketRouter.registerHandler('telemetry', telemetryHandler)
 
     // Heartbeat handler — updates onlineAt in DB when device sends ping
     websocketRouter.registerHandler('heartbeat', async (connection, _message) => {

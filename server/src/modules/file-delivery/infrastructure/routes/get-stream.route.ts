@@ -18,10 +18,30 @@ export const getStreamRoute = async (fastify: FastifyInstance) => {
         const prisma = fastify.prisma as PrismaClient
         const file = await prisma.file.findFirst({ where: { path: key } })
         const buffer = await fastify.storage.getFileBuffer(key)
-        reply.header('Content-Type', file?.mimeType ?? 'application/octet-stream')
-        reply.header('Content-Length', buffer.length)
-        reply.header('Cache-Control', 'public, max-age=3600')
+        const mimeType = file?.mimeType ?? 'application/octet-stream'
+        const totalSize = buffer.length
+
         reply.header('Accept-Ranges', 'bytes')
+        reply.header('Cache-Control', 'public, max-age=3600')
+        reply.header('Content-Type', mimeType)
+
+        const rangeHeader = (request.headers as any)['range']
+
+        if (rangeHeader) {
+            const match = rangeHeader.match(/bytes=(\d+)-(\d*)/)
+            if (match) {
+                const start = parseInt(match[1], 10)
+                const end = match[2] ? parseInt(match[2], 10) : totalSize - 1
+                const chunkSize = end - start + 1
+
+                reply.status(206)
+                reply.header('Content-Range', `bytes ${start}-${end}/${totalSize}`)
+                reply.header('Content-Length', chunkSize)
+                return reply.send(buffer.slice(start, end + 1))
+            }
+        }
+
+        reply.header('Content-Length', totalSize)
         return reply.send(buffer)
     })
 }
