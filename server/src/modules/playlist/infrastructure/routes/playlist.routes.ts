@@ -252,9 +252,9 @@ const playlistRoutes = async (fastify: FastifyInstance) => {
                         id: playlistId,
                         name: playlist?.name,
                         layout: playlist?.layout ? {
-                            id: playlist.playlistLayout.id,
-                            resolutionWidth: playlist.playlistLayout.resolutionWidth,
-                            resolutionHeight: playlist.playlistLayout.resolutionHeight,
+                            id: playlist.layout.id,
+                            resolutionWidth: playlist.layout.resolutionWidth,
+                            resolutionHeight: playlist.layout.resolutionHeight,
                             sections,
                         } : null,
                         items: items.map((item: any) => ({
