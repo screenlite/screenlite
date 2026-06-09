@@ -26,7 +26,7 @@ const storagePlugin: FastifyPluginAsync = async (fastify) => {
 
     const storage = new StorageFactory(s3Client)
 
-    const storageAdapter = storage.create(fastify.config.storage, fastify.config.app.backendUrl)
+    const storageAdapter = storage.create(fastify.config.storage, fastify.config.app.backendUrl, fastify.config.s3Buckets?.userUploads)
 
     await storageAdapter.check()
 

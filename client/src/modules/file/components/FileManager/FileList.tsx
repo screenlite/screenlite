@@ -24,7 +24,7 @@ const SuspenseFileList = ({ search, folderId, onFileDoubleClick }: FileListProps
         }
     }))
 
-    const { data: files } = data
+    const { items: files } = data
     const { isSelected, setSelectedItems, handleItemClick } = useSelectionStore()
     const { openContextMenu } = useContextMenuStore()
 

@@ -1,0 +1,25 @@
+enum Weekday {
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    SUNDAY
+}
+
+model PlaylistSchedule {
+    id         String    @id @default(uuid())
+    playlistId String
+    startAt    DateTime
+    endAt      DateTime?
+    startTime  String?
+    endTime    String?
+    weekdays   Weekday[]
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+
+    playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+    @@index([playlistId])
+}

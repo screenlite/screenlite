@@ -5,10 +5,11 @@ import { TbChevronLeft } from 'react-icons/tb'
 import { Button } from '@shared/ui/buttons/Button.js'
 import { usePlaylistLayout } from '@modules/playlistLayout/hooks/usePlaylistLayout.js'
 import { usePlaylistLayoutEditorStorage } from '@stores/usePlaylistLayoutEditorStorage'
-import { useMutation } from '@tanstack/react-query'
+
 import { updatePlaylistLayoutRequest, UpdatePlaylistLayoutRequestData } from '@modules/playlistLayout/api/updatePlaylistLayoutRequest'
 import { useSetPlaylistLayoutQueryData } from '@modules/playlistLayout/hooks/useSetPlaylistLayoutQueryData'
 import { usePlaylistLayoutEditorHistory } from '@stores/usePlaylistLayoutEditorStorage'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const WorkspacePlaylistLayoutEditorLayout = ({ children }: { children: ReactNode }) => {
     const routes = useWorkspaceRoutes()
@@ -18,6 +19,7 @@ export const WorkspacePlaylistLayoutEditorLayout = ({ children }: { children: Re
     const { canUndo, canRedo, undo, redo } = usePlaylistLayoutEditorHistory()
 
     const setPlaylistLayoutQueryData = useSetPlaylistLayoutQueryData()
+    const queryClient = useQueryClient()
 
     const closeContentManager = async () => {
         await navigate(routes.playlistLayout(layout.id), { replace: true })
@@ -33,8 +35,9 @@ export const WorkspacePlaylistLayoutEditorLayout = ({ children }: { children: Re
     const { mutate, isPending } = useMutation({
         mutationFn: (data: UpdatePlaylistLayoutRequestData) => updatePlaylistLayoutRequest(data),
         onSuccess: async (playlistLayout) => {
-            setPlaylistLayoutQueryData(playlistLayout.id, layout.workspaceId, playlistLayout)
+	    setPlaylistLayoutQueryData(playlistLayout.id, layout.workspaceId, playlistLayout)
             setInitialLayoutData(playlistLayout)
+	    queryClient.invalidateQueries({ queryKey: ['workspacePlaylistLayouts'] })
         },
         onError: (error) => {
             console.log(error)
@@ -44,12 +47,12 @@ export const WorkspacePlaylistLayoutEditorLayout = ({ children }: { children: Re
     const submit = () => {
         mutate({
             playlistLayoutId: layout.id,
+            workspaceId: layout.workspaceId,
             sections: sections!,
             resolutionHeight: resolution!.height,
             resolutionWidth: resolution!.width
         })
     }
-
     return (
         <div>
             <header className='flex justify-between items-center bg-neutral-100 sticky top-0 h-[64px]'>

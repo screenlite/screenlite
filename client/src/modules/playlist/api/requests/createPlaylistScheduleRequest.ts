@@ -2,11 +2,13 @@ import axios from '@config/axios'
 import { CreatePlaylistScheduleRequestData, PlaylistSchedule } from '../../types'
 
 type CreatePlaylistScheduleResponse = {
-    schedules: PlaylistSchedule[]
+    schedule: PlaylistSchedule
 }
 
-export const createPlaylistScheduleRequest = async (data: CreatePlaylistScheduleRequestData) => {
-    const response = await axios.post<CreatePlaylistScheduleResponse>('/playlistSchedules/create', data)
-
-    return response.data.schedules
+export const createPlaylistScheduleRequest = async (data: CreatePlaylistScheduleRequestData & { workspaceId: string }) => {
+    const response = await axios.post<CreatePlaylistScheduleResponse>(
+        `/workspaces/${data.workspaceId}/playlist-schedules/create`,
+        data
+    )
+    return response.data.schedule
 }

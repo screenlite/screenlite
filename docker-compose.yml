@@ -4,6 +4,7 @@ services:
     build:
       context: ./server
       dockerfile: ./docker/Dockerfile.dev
+    restart: always
     container_name: screenlite-server
     ports:
       - "${SERVER_PORT:-3000}:3000"
@@ -19,6 +20,7 @@ services:
       - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/screenlite}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-MACLRedis2026}
       - STORAGE_TYPE=${STORAGE_TYPE:-s3}
       - S3_PORT=${S3_PORT:-9000}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY:-screenlite}
@@ -70,6 +72,7 @@ services:
     build:
       context: ./ffmpeg-service
       dockerfile: ./docker/Dockerfile.dev
+    restart: always
     container_name: screenlite-ffmpeg-service
     environment:
       - NODE_ENV=${NODE_ENV:-production}
@@ -83,7 +86,6 @@ services:
       - ffmpeg-network
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
       interval: 30s
@@ -109,6 +111,7 @@ services:
     build:
       context: ./client
       dockerfile: ./docker/Dockerfile.dev
+    restart: always
     container_name: screenlite-client
     ports:
       - "${CLIENT_PORT:-3001}:3001"
@@ -117,9 +120,9 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000/}
+      - VITE_API_URL=${VITE_API_URL:-https://screenlite.ddns.net/api}
       - VITE_PORT=${VITE_PORT:-3001}
-      - VITE_HMR_HOST=${VITE_HMR_HOST:-0.0.0.0}
+      - VITE_HMR_HOST=${VITE_HMR_HOST:-}
     depends_on:
       server:
         condition: service_healthy
@@ -132,6 +135,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
+    restart: always
     container_name: screenlite-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -146,26 +150,27 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
 
   # Redis Service
   redis:
     image: redis:7-alpine
+    restart: always
     container_name: screenlite-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-MACLRedis2026}
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-MACLRedis2026}", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
 
   # MinIO Service
   minio:
     image: minio/minio
+    restart: always
     container_name: screenlite-minio
     command: server /data --console-address ":9001"
     environment:
@@ -184,7 +189,23 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-    restart: unless-stopped
+
+
+  minio-init:
+    image: minio/mc
+    restart: always
+    container_name: screenlite-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${S3_ACCESS_KEY:-screenlite} $${S3_SECRET_KEY:-screenlite} &&
+      mc mb --ignore-existing local/$${S3_USER_UPLOADS:-screenlite-uploads} &&
+      echo 'Bucket ready'
+      "
+    networks:
+      - default
 
 volumes:
   screenlite_storage:

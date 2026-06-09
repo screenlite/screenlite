@@ -21,7 +21,7 @@ const PlaylistLayoutsList = ({ search, selectedLayoutId, selectLayout }: { searc
             page: 1
         }
     }))
-    const { data: playlistLayouts } = data
+    const { items: playlistLayouts } = data
 
     return (
         <>
@@ -91,9 +91,9 @@ export const ChangePlaylistLayoutModal = ({ closeModal }: { closeModal: () => vo
                 </div>
                 <div>
                     <QueryErrorResetBoundary>
-                        <ErrorBoundary fallbackRender={ () => (
+                        <ErrorBoundary fallbackRender={ ({ error }) => (
                             <div>
-                                There was an error!
+                                Error: { error?.message || 'Unknown error' }
                             </div>
                         ) }
                         >

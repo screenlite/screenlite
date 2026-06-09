@@ -109,7 +109,7 @@ export const ConnectDeviceModal = ({ onClose }: Props) => {
                     size='small'
                     className='w-full'
                     disabled={ isPending }
-                    onClick={ () => handleSubmit(onSubmit)() }
+                    type="button" onClick={ () => handleSubmit(onSubmit)() }
                 >
                     Connect
                 </Button>

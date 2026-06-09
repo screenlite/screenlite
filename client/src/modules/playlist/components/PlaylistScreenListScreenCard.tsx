@@ -16,8 +16,8 @@ export const PlaylistScreenListScreenCard = ({ screen }: { screen: Screen }) => 
 
     const { mutate: removeScreenMutation, isPending } = useMutation({
         mutationFn: (data: RemoveScreensFromPlaylistRequestData) => removeScreensFromPlaylistRequest(data),
-        onSuccess: (data) => {
-            queryClient.setQueryData(screensQuery.queryKey, data)
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: screensQuery.queryKey })
         },
         onError: (error) => {
             console.log(error)

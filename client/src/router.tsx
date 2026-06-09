@@ -7,6 +7,7 @@ import { GuestRouteMiddleware } from '@modules/auth/middlewares/GuestRouteMiddle
 import { workspaceRoutes } from '@modules/workspace/workspaceRoutes'
 import { ComponentsProvider } from '@/providers/ComponentsProvider'
 import { ConfigProvider } from '@modules/config/providers/ConfigProvider'
+import { PlayerPage } from '@modules/player/PlayerPage'
 
 const guestRoutes = {
     element: <GuestRouteMiddleware />,
@@ -24,6 +25,10 @@ const privateRoutes = {
 }
 
 export const routes = [
+    {
+        path: '/player/:screenId',
+        element: <PlayerPage />
+    },
     {
         element: <ComponentsProvider />,
         children: [

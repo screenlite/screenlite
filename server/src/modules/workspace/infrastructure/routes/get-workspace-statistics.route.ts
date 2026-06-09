@@ -18,7 +18,8 @@ export const getWorkspaceStatisticsRoute = async (fastify: FastifyInstance) => {
                 {
                     workspaceRepository: fastify.workspaceRepository,
                     workspaceAccessService: fastify.workspaceAccessService,
-                    workspaceStatisticsQuery: fastify.workspaceStatisticsQuery
+                    workspaceStatisticsQuery: fastify.workspaceStatisticsQuery,
+                    workspaceInvariantsService: fastify.workspaceInvariantsService
                 }
             )
 
