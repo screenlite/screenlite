@@ -119,6 +119,11 @@ const SectionPlayer = ({ section, items, resolution }: {
                     loop
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     onEnded={() => setCurrentIndex(prev => (prev + 1) % sectionItems.length)}
+                    onError={() => {
+                        setTimeout(() => {
+                            setCurrentIndex(prev => (prev + 1) % sectionItems.length)
+                        }, 2000)
+                    }}
                 />
             ) : current.file && current.file.mimeType.startsWith('image/') ? (
                 <img
